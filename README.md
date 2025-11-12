@@ -29,7 +29,7 @@ sec_filing_connector/
 
 ### 1️⃣ Clone the repository
 ```bash
-git clone <your-fork-url>
+git clone https://github.com/tnittala/sec_filing_connector.git
 cd sec_filing_connector
 ```
 
