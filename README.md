@@ -1,195 +1,135 @@
-# SEC Filing Connector - Coding Test
+# SEC Filing Connector
 
-## Overview
-
-Build a Python module that fetches and filters SEC EDGAR filings. This is a **2-3 hour coding test** focusing on clean code, typing, and testability.
-
-**You'll build:**
-- Company lookup (ticker → CIK)
-- Filing list with filters (form type, date range)
-- Basic download capability
-
+A Python module for fetching and filtering SEC EDGAR filings (using local JSON fixtures).  
+Implements company lookup, filing filters, and a simple CLI — designed as part of the **DS@GT FinTech Project SEC API Assessment**.
 
 ---
 
-## Project Structure
+## 📁 Project Structure
 
 ```
-sec_connector/
-  pyproject.toml
-  README.md
-  sec_connector/
-    __init__.py
-    models.py      # Data models
-    client.py      # Core logic
-    cli.py         # Simple CLI
-  tests/
-    test_client.py
-    fixtures/
-      company_tickers.json
-      filings_sample.json
+sec_filing_connector/
+├── pyproject.toml
+├── README.md
+├── sec_connector/
+│   ├── __init__.py
+│   ├── models.py
+│   ├── client.py
+│   └── cli.py
+└── tests/
+    ├── test_client.py
+    └── fixtures/
+        ├── company_tickers.json
+        └── filings_sample.json
 ```
 
 ---
 
-## Setup
+## ⚙️ Installation
 
-**Dependencies:** `httpx`, `pydantic`, `pytest`
+From the project root:
 
-```toml
-# pyproject.toml
-[project]
-name = "sec-connector"
-version = "0.1.0"
-requires-python = ">=3.11"
-dependencies = ["httpx>=0.24", "pydantic>=2.0", "pytest>=7.0"]
+```bash
+pip install -e .
+```
+
+Dependencies:
+- Python ≥ 3.11  
+- `pydantic>=2.0`  
+- `httpx>=0.24`  
+- `pytest>=7.0`
+
+---
+
+## 🧪 Running Tests
+
+Run all tests using:
+
+```bash
+pytest -v
+```
+
+All tests should pass ✅  
+
+The test suite covers:
+- **Models:** validation and CIK zero-padding  
+- **Company Lookup:** valid/invalid ticker handling  
+- **Filings:** filtering by form type, date range, newest-first sorting, and result limiting  
+- **Download:** writes valid JSON files with ISO-formatted dates  
+- **Validation:** empty inputs, invalid dates, missing fields
+
+---
+
+## 🧾 Example CLI Usage
+
+The CLI loads local JSON fixture data (`tests/fixtures/`) and supports filters and downloads.
+
+List all recent filings for Apple:
+```bash
+python -m sec_connector.cli AAPL
+```
+
+Filter by form type (e.g., 10-K only):
+```bash
+python -m sec_connector.cli AAPL --form 10-K
+```
+
+Limit the number of results:
+```bash
+python -m sec_connector.cli AAPL --limit 3
+```
+
+Filter by date range:
+```bash
+python -m sec_connector.cli AAPL --date_from 2024-01-01 --date_to 2024-12-31
+```
+
+Download filings (saves JSONs under `downloads/`):
+```bash
+python -m sec_connector.cli AAPL --form 10-K --download
+```
+
+If the fixtures can’t be found, the CLI will print a clear error message.
+
+---
+
+## 🧩 Design Overview
+
+### Components
+- **`models.py`** — Pydantic data models (`Company`, `Filing`, `FilingFilter`)
+- **`client.py`** — `SECClient` for company lookup, filing filtering, and local “download”
+- **`cli.py`** — Command-line interface built with `argparse`
+- **`tests/`** — pytest suite with structured sample data
+
+### Validation & Error Handling
+- CIKs normalized to 10 digits (`zfill(10)`)
+- Empty or invalid input raises `ValueError`
+- Invalid or missing filing dates skipped gracefully
+- Clear, descriptive error messages for bad input
+- Strong type hints and docstrings throughout
+
+---
+
+## 🧠 Example Output
+
+Example:
+```bash
+> python -m sec_connector.cli AAPL --form 10-K --limit 1
+Company: Apple Inc. (CIK 0000320193)
+
+DATE         | FORM   | ACCESSION #
+---------------------------------------------
+2024-10-01   | 10-K   | 0000320193-24-000001
+```
+
+With `--download`, you’ll see:
+```bash
+Downloading filings...
+Saved: downloads/0000320193-24-000001.json
+✅ 1 filings saved to 'downloads/'
 ```
 
 ---
 
-## Task 1: Data Models (15 min)
-
-Create Pydantic models in `models.py`:
-
-```python
-from pydantic import BaseModel
-from datetime import date
-
-class Company(BaseModel):
-    ticker: str
-    cik: str
-    name: str
-
-class Filing(BaseModel):
-    cik: str
-    company_name: str
-    form_type: str
-    filing_date: date
-    accession_number: str
-    
-class FilingFilter(BaseModel):
-    form_types: list[str] | None = None
-    date_from: date | None = None
-    date_to: date | None = None
-    limit: int = 10
-```
-
-**Test:** Models validate correctly and reject bad data.
-
----
-
-## Task 2: Company Lookup (20 min)
-
-In `client.py`, implement:
-
-```python
-class SECClient:
-    def __init__(self, companies_data: dict[str, dict]):
-        """Initialize with company ticker->info mapping."""
-        self._companies = companies_data
-    
-    def lookup_company(self, ticker: str) -> Company:
-        """Find company by ticker, raise ValueError if not found."""
-        # TODO: implement
-        pass
-```
-
-**Tests:**
-- Valid ticker returns Company
-- Invalid ticker raises ValueError
-- CIK is zero-padded to 10 digits
-
----
-
-## Task 3: Filter Filings (45 min)
-
-Implement filing search with filters:
-
-```python
-class SECClient:
-    # ... previous code ...
-    
-    def list_filings(self, cik: str, filters: FilingFilter) -> list[Filing]:
-        """
-        Get filings for a CIK, applying filters.
-        
-        - Filter by form_types (if provided)
-        - Filter by date range (if provided)
-        - Sort by date descending
-        - Limit results
-        """
-        # TODO: implement
-        pass
-```
-
-**Tests:**
-- No filters returns all filings (limited)
-- Form type filter works (only 10-K)
-- Date range filter works
-- Results sorted newest first
-- Limit respected
-
----
-
-## Task 4: CLI (30 min)
-
-Simple command-line interface in `cli.py`:
-
-```python
-import json
-from pathlib import Path
-from sec_connector.client import SECClient
-from sec_connector.models import FilingFilter
-
-def main():
-    """
-    Usage: python -m sec_connector.cli AAPL --form 10-K --limit 5
-    """
-    # TODO: Parse args (use argparse or simple sys.argv)
-    # Load fixtures
-    # Call client methods
-    # Print results as table or JSON
-    pass
-
-if __name__ == "__main__":
-    main()
-```
-
-**Test:** Run CLI with test data and verify output.
-
----
-
-## Task 5: Edge Cases & Polish (20 min)
-
-Add:
-- Input validation (empty strings, invalid dates)
-- Helpful error messages
-- Type hints throughout
-- Docstrings for public methods
-
----
-
-## What We're Looking For
-
-**Clean code** - Readable, well-organized  
-**Type safety** - Proper type hints, Pydantic validation  
-**Error handling** - Graceful failures with clear messages  
-**Filtering logic** - Correct implementation of all filters  
-
----
-
-## Submission
-
-Provide:
-1. Working code in the structure above
-2. Tests that pass: `pytest tests/`
-3. Brief README with:
-   - How to install: `pip install -e .`
-   - How to run tests: `pytest`
-   - Example CLI usage
-
-**Time estimate:** 2-3 hours
-
----
-
-Good luck! Focus on correctness and clarity over completeness.
+**Author:** Trisha Nittala  
+**Georgia Tech | DS@GT FinTech Project**
