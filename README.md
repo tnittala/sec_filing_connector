@@ -25,15 +25,36 @@ sec_filing_connector/
 
 ---
 
-## ⚙️ Installation
+## ⚙️ Setup Instructions
 
-From the project root:
+### 1️⃣ Clone the repository
+```bash
+git clone <your-fork-url>
+cd sec_filing_connector
+```
 
+### 2️⃣ (Optional) Create and activate a virtual environment
+**Windows (PowerShell):**
+```powershell
+python -m venv .venv
+.venv\Scripts\Activate
+```
+
+**macOS / Linux:**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+```
+
+### 3️⃣ Install the package in editable mode
+Run this **from the project root**:
 ```bash
 pip install -e .
 ```
 
-Dependencies:
+This installs the package along with all dependencies defined in `pyproject.toml`.
+
+Dependencies include:
 - Python ≥ 3.11  
 - `pydantic>=2.0`  
 - `httpx>=0.24`  
@@ -43,26 +64,24 @@ Dependencies:
 
 ## 🧪 Running Tests
 
-Run all tests using:
-
+Once installed, run the full test suite with:
 ```bash
 pytest -v
 ```
 
-All tests should pass ✅  
+✅ This runs all tests in verbose mode, including model validation, company lookup, filing filtering, CLI functionality, and error handling.  
+You should see all tests pass.
 
-The test suite covers:
-- **Models:** validation and CIK zero-padding  
-- **Company Lookup:** valid/invalid ticker handling  
-- **Filings:** filtering by form type, date range, newest-first sorting, and result limiting  
-- **Download:** writes valid JSON files with ISO-formatted dates  
-- **Validation:** empty inputs, invalid dates, missing fields
+If pytest isn’t recognized, use:
+```bash
+python -m pytest -v
+```
 
 ---
 
 ## 🧾 Example CLI Usage
 
-The CLI loads local JSON fixture data (`tests/fixtures/`) and supports filters and downloads.
+After installation, the command-line interface can be used to interact with the fixture data.
 
 List all recent filings for Apple:
 ```bash
@@ -84,12 +103,12 @@ Filter by date range:
 python -m sec_connector.cli AAPL --date_from 2024-01-01 --date_to 2024-12-31
 ```
 
-Download filings (saves JSONs under `downloads/`):
+Download filings (saves JSON files under `downloads/`):
 ```bash
 python -m sec_connector.cli AAPL --form 10-K --download
 ```
 
-If the fixtures can’t be found, the CLI will print a clear error message.
+If the fixtures can’t be found, the CLI will print a helpful error message.
 
 ---
 
@@ -104,7 +123,7 @@ If the fixtures can’t be found, the CLI will print a clear error message.
 ### Validation & Error Handling
 - CIKs normalized to 10 digits (`zfill(10)`)
 - Empty or invalid input raises `ValueError`
-- Invalid or missing filing dates skipped gracefully
+- Invalid or missing filing dates skipped
 - Clear, descriptive error messages for bad input
 - Strong type hints and docstrings throughout
 
