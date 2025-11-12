@@ -19,7 +19,7 @@ class Filing(BaseModel):
     company_name: str
     form_type: str
     filing_date: date
-    accession_number: str
+    accession_number: str #can do validation check on this if requirements are known (like string length, format, etc)
 
     @field_validator("cik")
     @classmethod

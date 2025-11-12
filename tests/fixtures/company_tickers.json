@@ -1,0 +1,14 @@
+{
+  "AAPL": {
+    "cik": "320193",
+    "name": "Apple Inc."
+  },
+  "MSFT": {
+    "cik": "789019",
+    "name": "Microsoft Corporation"
+  },
+  "TSLA": {
+    "cik": "1318605",
+    "name": "Tesla, Inc."
+  }
+}

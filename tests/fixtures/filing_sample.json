@@ -1,0 +1,37 @@
+[
+  {
+    "cik": "0000320193",
+    "company_name": "Apple Inc.",
+    "form_type": "10-K",
+    "filing_date": "2024-10-01",
+    "accession_number": "0000320193-24-000001"
+  },
+  {
+    "cik": "0000320193",
+    "company_name": "Apple Inc.",
+    "form_type": "10-Q",
+    "filing_date": "2024-08-01",
+    "accession_number": "0000320193-24-000002"
+  },
+  {
+    "cik": "0000320193",
+    "company_name": "Apple Inc.",
+    "form_type": "8-K",
+    "filing_date": "2023-12-15",
+    "accession_number": "0000320193-23-000004"
+  },
+  {
+    "cik": "0000789019",
+    "company_name": "Microsoft Corporation",
+    "form_type": "10-K",
+    "filing_date": "2024-09-15",
+    "accession_number": "0000789019-24-000001"
+  },
+  {
+    "cik": "0001318605",
+    "company_name": "Tesla, Inc.",
+    "form_type": "10-K",
+    "filing_date": "2024-02-10",
+    "accession_number": "0001318605-24-000001"
+  }
+]
