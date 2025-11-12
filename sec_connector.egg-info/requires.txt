@@ -1,3 +1,0 @@
-httpx>=0.24
-pydantic>=2.0
-pytest>=7.0
